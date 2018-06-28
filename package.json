@@ -1,0 +1,19 @@
+{
+  "name": "itc230",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrSamsa42/SCC_ITC_230.git"
+  },
+  "author": "Jonathan Adler",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MrSamsa42/SCC_ITC_230/issues"
+  },
+  "homepage": "https://github.com/MrSamsa42/SCC_ITC_230#readme"
+}
