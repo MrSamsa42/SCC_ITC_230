@@ -12,8 +12,11 @@ http.createServer(function(req, res){
             });
             break;
         case '/about' :
-            res.writeHead('200', {'Content-Type' : 'text/plain'});
-            res.end('This is the about page');
+            fs.readFile('public/about.html', function(err, data){
+                if(err) return console.error(err);
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                res.end(data.toString());
+            })
             break;
         default :
             res.writeHead('404', {'Content-Type' : 'text/plain'});
