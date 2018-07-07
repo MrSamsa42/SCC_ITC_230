@@ -12,6 +12,8 @@ http.createServer( (req, res) => {
     console.log(path);
     let params = new url.URLSearchParams(routeURL.search);
     console.log(params.get('title'));
+    let title = {};
+    let intro = "";
     switch(path) {
         case '/':
             fs.readFile('public/home.html', (err, data) => {
@@ -27,15 +29,21 @@ http.createServer( (req, res) => {
                 res.end(data.toString());
             })
             break;
+        case '/delete' :
+            res.writeHead(200, {'Content-Type': 'text/plain'});
+            title = params.get('title');
+            intro = `Searching for ${title}... \n`;
+            let deleteMovieString = `${intro} ${movies.deleteMovie(title)}`;
+            res.end(deleteMovieString);
+            
+            break;
         case '/get' :
             res.writeHead(200, {'Content-Type': 'text/plain'});
-            let title = params.get('title');
-            //res.end(`Searching for ${title} ... \n`);
-            let movie = movies.getMovie(title);
-            let movieString = (movie) ? JSON.stringify(movie) : `${title} was not found!`;
+            title = params.get('title');
+            intro = `Searching for ${title}... \n`;
+            let movieString = (movies.getMovie(title)) ? `${intro} ${JSON.stringify(movies.getMovie(title))}` : `${intro}${title} was not found!`;
             res.end(movieString);
             break;
-            
         default :
             fs.readFile('public/404.html', (err, data) =>{
                 if(err) return console.error(err);
