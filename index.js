@@ -4,8 +4,7 @@ const movies = require("./lib/movies");
 const url = require('url');
 
 http.createServer( (req, res) => {
-    //console.log(req.headers.host);
-    let base = `https://${req.headers.host}`;
+    let base = `${req.headers['x-forwarded-proto']}://${req.headers.host}`;
     let completeURL = new url.URL(req.url, base);
     let path = completeURL.pathname;
     let params = new url.URLSearchParams(completeURL.search);
