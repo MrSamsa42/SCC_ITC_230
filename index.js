@@ -4,7 +4,8 @@ const movies = require("./lib/movies");
 const url = require('url');
 
 http.createServer( (req, res) => {
-    let base = "https://7b4b165d23a942ed9a7b8c118ebed6e5.vfs.cloud9.us-west-2.amazonaws.com";
+    //console.log(req.headers.host);
+    let base = `https://${req.headers.host}`;
     let completeURL = new url.URL(req.url, base);
     let path = completeURL.pathname;
     let params = new url.URLSearchParams(completeURL.search);
