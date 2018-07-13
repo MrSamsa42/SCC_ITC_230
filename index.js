@@ -26,7 +26,10 @@ app.get('/details', (req, res) => {
     let title = req.query.title;
     let movie = movies.getMovie(title);
     if(movie){
-        res.render('details', {movie : movie})
+        res.render('details', {
+            movie : movie, 
+            title : title
+        })
     }
 });
 

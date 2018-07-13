@@ -1,12 +1,11 @@
-<h1>This is the delete page!</h1>
 
-<h2>{{title}}</h2>
+<h2>Deleting {{title}}...</h2>
 {{#if movie}}
     <h3>{{movie.title}} was deleted!</h3>
     <p>There are {{remaining}} zombie movies remaining</p>
 
 {{else}}
-    <h2>{{title}} was not found!</h2>
+    <h3>{{title}} was not found!</h3>
 {{/if}}
 
 <p><a href="/">Take Me Home!</a></p>
