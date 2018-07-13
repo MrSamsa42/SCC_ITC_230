@@ -1,7 +1,75 @@
-const http = require("http");
-const fs = require("fs");
+'use strict'
+const express = require('express');
+const app = express();
+let handlebars =  require("express-handlebars");
 const movies = require("./lib/movies");
-const url = require('url');
+
+
+app.set('port', process.env.PORT || 3000);
+//app.use(express.static(__dirname + '/public')); //location for static files
+app.use(express.static("public"));
+app.use(require("body-parser").urlencoded({extended: true}));
+app.engine(".html", handlebars({extname: '.html'}));
+app.set("view engine", ".html");
+
+app.listen(app.get('port'), () => {
+    console.log("The server is running!");
+});
+
+app.get('/', (req, res) => {
+    let allMovies = movies.getAllMovies();
+    res.render('home', {allMovies : allMovies});
+    //res.send('This is the home page');
+});
+
+app.get('/details', (req, res) => {
+    let title = req.query.title;
+    let movie = movies.getMovie(title);
+    if(movie){
+        res.render('details', {movie : movie})
+    }
+});
+
+app.post('/details', (req, res) => {
+    let title = req.body.title;
+    let movie = movies.getMovie(title);
+    res.render('details', {
+        movie : movie,
+        title : title
+    })
+});
+
+app.get('/delete', (req, res) => {
+    let title = req.query.title;
+    let movie = movies.deleteMovie(title);
+    let remaining;
+    if(movie){
+        remaining = movies.getAllMovies().length;
+    }
+    res.render('delete', {
+        movie : movie, 
+        title : title,
+        remaining : remaining
+    });
+});
+
+app.get('/about', (req, res) => {
+   res.render('about');
+});
+
+app.get('/add', (req, res) => {
+    res.type('text/html');
+    res.send('This is the add page');
+});
+
+app.use( (req,res) => {
+ //res.type('text/plain'); 
+ res.status(404);
+ res.render('404');
+});
+
+
+/* HOMEWORK 2 CODE
 
 http.createServer( (req, res) => {
     let base = `${req.headers['x-forwarded-proto']}://${req.headers.host}`;
@@ -61,4 +129,4 @@ http.createServer( (req, res) => {
 }).listen(process.env.PORT || 3000, () => {
     console.log("The server is running!");
 });
-
+*/

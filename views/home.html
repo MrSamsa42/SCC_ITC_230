@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home Page!</title>
+        <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.2/semantic.min.css"> -->
+    </head>
+    <body>
+        <h1>This is the home page!</h1>
+        <p>
+            <a href="/about">About</a>
+        </p>
+        
+        <div>
+            <form action="/details" method="POST">
+                <div>
+                  Search for a Zombie Movie:  
+                  <input type="text" placeholder="Search..." name="title">
+                  <button>Search!</button>
+                </div>
+            </form>
+        </div>
+        
+        <div>
+            <ul>
+                {{# each allMovies}}
+                <li><a href="/details?title={{title}}">{{title}}</a></li>
+                {{/each}}
+            </ul>
+        </div>
+    </body>    
+</html> 

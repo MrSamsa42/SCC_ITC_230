@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/MrSamsa42/SCC_ITC_230/issues"
   },
-  "homepage": "https://github.com/MrSamsa42/SCC_ITC_230#readme"
+  "homepage": "https://github.com/MrSamsa42/SCC_ITC_230#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "express-handlebars": "^3.0.0"
+  }
 }
