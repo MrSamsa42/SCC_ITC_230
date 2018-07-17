@@ -1,18 +1,21 @@
-<h1>Searching for {{title}}...</h1>
+{{> header}}
+<div class="container">
+    <h1>Searching for {{title}}...</h1>
 
-{{#if movie}}
-<h2>Found!</h2>
-<img src="{{movie.poster}}" alt="{{movie.title}}">
-<h2>{{movie.title}}</h2>
-<p>{{movie.year}}</p>
-<p><a href="https://www.imdb.com/title/{{movie.imdbID}}">IMDB page</a></p>
-<br>
-<hr>
-<p><a href="/delete?title={{movie.title}}">Delete {{movie.title}}</a></p>
-<hr>
+    {{#if movie}}
+    <h2>Found!</h2>
+    <img class="poster" src="{{movie.poster}}" alt="{{movie.title}}">
+    <h2>{{movie.title}}</h2>
+    <p>{{movie.year}}</p>
+    <a href="https://www.imdb.com/title/{{movie.imdbID}}">IMDB page</a>
+    <br>
+    <hr>
+    <p><a href="/delete?title={{movie.title}}">Delete {{movie.title}}</a></p>
+    <hr> {{else}}
+    <h2>{{title}} was not found!</h2>
+    {{/if}}
 
-{{else}}
-<h2>{{title}} was not found!</h2>
-{{/if}}
-
-<p><a href="/">Take Me Home!</a></p>
+    <p><a href="/">Take Me Home!</a></p>
+</div>
+<!--end container-->
+{{> footer}}

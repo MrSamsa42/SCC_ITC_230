@@ -1,11 +1,15 @@
-
-<h2>Deleting {{title}}...</h2>
-{{#if movie}}
+{{> header}}
+<div class="container">
+    <h2>Deleting {{title}}...</h2>
+    {{#if movie}}
     <h3>{{movie.title}} was deleted!</h3>
     <p>There are {{remaining}} zombie movies remaining</p>
 
-{{else}}
+    {{else}}
     <h3>{{title}} was not found!</h3>
-{{/if}}
+    {{/if}}
 
-<p><a href="/">Take Me Home!</a></p>
+    <p><a href="/">Take Me Home!</a></p>
+</div>
+<!--end container-->
+{{> footer}}

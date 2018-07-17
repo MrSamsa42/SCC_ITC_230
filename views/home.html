@@ -1,29 +1,24 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Home Page!</title>
-        <!-- <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.2/semantic.min.css"> -->
-    </head>
-    <body>
-        <h1>This is the home page!</h1>
-        <p>
-            <a href="/about">About</a>
-        </p>
-        
-        <div>
-            <h3>Search for a Zombie Movie or select from the list below</h3>
-            <form action="/details" method="POST">
-                  <input type="text" placeholder="Title" name="title">
-                  <button>Search!</button>
-            </form>
-        </div>
-        
-        <div>
-            <ul>
-                {{# each allMovies}}
-                <li><a href="/details?title={{title}}">{{title}}</a></li>
-                {{/each}}
-            </ul>
-        </div>
-    </body>    
-</html> 
+{{> header}}
+<div class="container">
+    <h1>Adler IT230 WebApp</h1>
+    <hr>
+
+    <div>
+        <h3>Search for a Zombie Movie or select from the list below</h3>
+        <form action="/details" method="POST">
+            <input type="text" placeholder="Title" name="title">
+            <button>Search!</button>
+        </form>
+    </div>
+
+    <div>
+        <ul>
+            {{# each allMovies}}
+            <li><a href="/details?title={{title}}">{{title}}</a></li>
+            {{/each}}
+        </ul>
+    </div>
+</div>
+<!--end container-->
+
+{{> footer}}

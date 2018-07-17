@@ -1,15 +1,19 @@
 'use strict'
-const express = require('express');
-const app = express();
-let handlebars =  require("express-handlebars");
-const movies = require("./lib/movies");
-
+const express  = require('express');
+const app      = express();
+let handlebars = require("express-handlebars");
+const movies   = require("./lib/movies");
 
 app.set('port', process.env.PORT || 3000);
 //app.use(express.static(__dirname + '/public')); //location for static files
 app.use(express.static("public"));
 app.use(require("body-parser").urlencoded({extended: true}));
-app.engine(".html", handlebars({extname: '.html'}));
+
+app.engine(".html", handlebars({
+    extname: '.html',
+    partialsDir: `${__dirname}/views/partials`
+}));
+
 app.set("view engine", ".html");
 
 app.listen(app.get('port'), () => {
@@ -18,7 +22,10 @@ app.listen(app.get('port'), () => {
 
 app.get('/', (req, res) => {
     let allMovies = movies.getAllMovies();
-    res.render('home', {allMovies : allMovies});
+    res.render('home', {
+        pageTitle: "ITC230 - Home",
+        allMovies : allMovies
+    });
     //res.send('This is the home page');
 });
 
@@ -27,9 +34,10 @@ app.get('/details', (req, res) => {
     let movie = movies.getMovie(title);
     if(movie){
         res.render('details', {
+            pageTitle: "ITC230 - Details",
             movie : movie, 
             title : title
-        })
+        });
     }
 });
 
@@ -37,9 +45,10 @@ app.post('/details', (req, res) => {
     let title = req.body.title;
     let movie = movies.getMovie(title);
     res.render('details', {
+        pageTitle: "ITC230 - Details",
         movie : movie,
         title : title
-    })
+    });
 });
 
 app.get('/delete', (req, res) => {
@@ -50,6 +59,7 @@ app.get('/delete', (req, res) => {
         remaining = movies.getAllMovies().length;
     }
     res.render('delete', {
+        pageTitle: "ITC230 - Delete",
         movie : movie, 
         title : title,
         remaining : remaining
@@ -62,7 +72,7 @@ app.get('/about', (req, res) => {
 
 app.get('/add', (req, res) => {
     res.type('text/html');
-    res.send('This is the add page');
+    res.send('This is where the add page will go');
 });
 
 app.use( (req,res) => {

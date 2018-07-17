@@ -1,0 +1,50 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: lightgrey;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    width: 800px;
+    margin: 0 auto;
+}
+
+.nav {
+    background-color: #595959;
+    color: #ffffff;
+    text-align: center;
+    padding: 20px 0 20px 0;
+}
+
+
+.nav ul {
+    list-style: none;
+}
+
+
+.nav li {
+    display: inline-block;
+    padding-right: 50px;
+}
+
+
+.nav li a {
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+
+.nav li a:hover {
+    color: #3AFF33;
+   
+}
+
+.poster {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40%;
+}
