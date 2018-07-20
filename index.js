@@ -1,12 +1,24 @@
-'use strict'
-const express  = require('express');
+'use strict';
+const express  = require("express");
 const app      = express();
 let handlebars = require("express-handlebars");
 const movies   = require("./lib/movies");
+const movieMethods = require("./lib/movieMethods");
+
+//ADD ALL MOVIES TO COLLECTION
+//const Movie = require("./models/movie");
+// let movs = movies.getAllMovies();
+// for(let mov of movs){
+//     Movie.create({
+//         title: mov.title,
+//         year: mov.year,
+//         imdbID: mov.imdbID,
+//         poster: mov.poster
+//     });
+// }
 
 app.set('port', process.env.PORT || 3000);
-//app.use(express.static(__dirname + '/public')); //location for static files
-app.use(express.static("public"));
+app.use(express.static(__dirname + '/public')); //location for static files
 app.use(require("body-parser").urlencoded({extended: true}));
 
 app.engine(".html", handlebars({
@@ -20,51 +32,69 @@ app.listen(app.get('port'), () => {
     console.log("The server is running!");
 });
 
-app.get('/', (req, res) => {
-    let allMovies = movies.getAllMovies();
-    res.render('home', {
-        pageTitle: "ITC230 - Home",
-        allMovies : allMovies
+app.get('/', (req, res, next) => {
+    movieMethods.getAllMovies()
+    .then((items) => {
+        res.render('home', {
+            pageTitle: "ITC230 - Home",
+            allMovies : items
+        });
+    })
+    .catch((err) => {
+        return next(err);
     });
-    //res.send('This is the home page');
 });
 
-app.get('/details', (req, res) => {
+app.get('/details', (req, res, next) => {
     let title = req.query.title;
-    let movie = movies.getMovie(title);
-    if(movie){
+    movieMethods.getMovie(title)
+    .then((movie) => {
+        if(movie){
+            res.render('details', {
+                pageTitle: "ITC230 - Details",
+                movie : movie, 
+                title : title
+            });
+        }
+    })
+    .catch((err) => {
+        return next(err);
+    });  
+});
+
+app.post('/details', (req, res, next) => {
+    let title = req.body.title;
+    movieMethods.getMovie(title)
+    .then((movie) => {
         res.render('details', {
             pageTitle: "ITC230 - Details",
             movie : movie, 
             title : title
         });
-    }
-});
-
-app.post('/details', (req, res) => {
-    let title = req.body.title;
-    let movie = movies.getMovie(title);
-    res.render('details', {
-        pageTitle: "ITC230 - Details",
-        movie : movie,
-        title : title
+    })
+    .catch((err) => {
+        return next(err);
     });
 });
 
-app.get('/delete', (req, res) => {
+app.get('/delete', (req, res, next) => {
     let title = req.query.title;
-    let movie = movies.deleteMovie(title);
-    let remaining;
-    if(movie){
-        remaining = movies.getAllMovies().length;
-    }
-    res.render('delete', {
-        pageTitle: "ITC230 - Delete",
-        movie : movie, 
-        title : title,
-        remaining : remaining
+    movieMethods.deleteMovie(title)
+    .then((movie) => {
+        movieMethods.getMovieCount().then((remaining) => {
+            res.render('delete', {
+                pageTitle: "ITC230 - Delete",
+                movie : movie, 
+                title : title,
+                remaining : remaining
+            });
+        });
+    })
+    .catch((err) => {
+    return next(err);
     });
 });
+
 
 app.get('/about', (req, res) => {
    res.render('about');
@@ -76,10 +106,56 @@ app.get('/add', (req, res) => {
 });
 
 app.use( (req,res) => {
- //res.type('text/plain'); 
  res.status(404);
  res.render('404');
 });
+
+// app.get('/', (req, res) => {
+//     let allMovies = movies.getAllMovies();
+//     res.render('home', {
+//         pageTitle: "ITC230 - Home",
+//         allMovies : allMovies
+//     });
+// });
+
+// app.get('/details', (req, res) => {
+//     let title = req.query.title;
+//     let movie = movies.getMovie(title);
+//     if(movie){
+//         res.render('details', {
+//             pageTitle: "ITC230 - Details",
+//             movie : movie, 
+//             title : title
+//         });
+//     }
+// });
+
+// app.post('/details', (req, res) => {
+//     let title = req.body.title;
+//     let movie = movies.getMovie(title);
+//     res.render('details', {
+//         pageTitle: "ITC230 - Details",
+//         movie : movie,
+//         title : title
+//     });
+// });
+
+
+// app.get('/delete', (req, res) => {
+//     let title = req.query.title;
+//     let movie = movies.deleteMovie(title);
+//     let remaining;
+//     if(movie){
+//         remaining = movies.getAllMovies().length;
+//     }
+//     res.render('delete', {
+//         pageTitle: "ITC230 - Delete",
+//         movie : movie, 
+//         title : title,
+//         remaining : remaining
+//     });
+// });
+
 
 
 /* HOMEWORK 2 CODE
