@@ -1,21 +1,9 @@
 'use strict';
 const express  = require("express");
 const app      = express();
-let handlebars = require("express-handlebars");
-const movies   = require("./lib/movies");
+const handlebars = require("express-handlebars");
 const movieMethods = require("./lib/movieMethods");
-
-//ADD ALL MOVIES TO COLLECTION
-//const Movie = require("./models/movie");
-// let movs = movies.getAllMovies();
-// for(let mov of movs){
-//     Movie.create({
-//         title: mov.title,
-//         year: mov.year,
-//         imdbID: mov.imdbID,
-//         poster: mov.poster
-//     });
-// }
+const cors = require("cors");
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public')); //location for static files
@@ -32,6 +20,98 @@ app.listen(app.get('port'), () => {
     console.log("The server is running!");
 });
 
+
+// API ROUTES
+let router = express.Router();
+
+//Middleware to log the type of request that was made
+router.use(function(req, res, next) {
+    console.log(`You made a ${req.method} request!`);
+    next(); 
+});
+
+//Return all movies
+router.get('/movies', (req, res) =>{
+    movieMethods.getAllMovies().then((movies) => {
+        if(movies){
+            res.json(movies);
+        } else {
+            return res.status(500).send('Error occurred: database error.');
+        }
+    }).catch((err)=> {
+        res.send(err);
+    });
+});
+
+//return single movie
+router.get('/movies/:title', (req, res) =>{
+    let movie = req.params.title;
+    movieMethods.getMovie(movie).then((foundMovie) => {
+        if(foundMovie){
+            res.json(foundMovie);
+        } else {
+            return res.status(500).send('Error occurred: database error.');
+        }
+    }).catch((err) => {
+        res.send(err);
+    });
+});
+
+//create a movie
+router.post('/movies', (req, res, next) => {
+    let newMovie = req.body.movie;
+    //newMovie = undefined;
+    movieMethods.createMovie(newMovie)
+    .then((result) => {
+        movieMethods.getMovieCount().then((total) => {
+            res.json(
+            {
+                records_created : result.n,
+                records_modified : result.nModified, 
+                total_records : total
+            });
+        });
+    })
+    .catch((err) => {
+    return next(err);
+    });
+});
+
+
+//delete a movie
+router.post('/movies/delete', (req, res, next) =>{
+    let message = "";
+    let unwantedMovie = req.body.deleteTitle;
+    movieMethods.deleteMovie(unwantedMovie)
+    .then((result) => {
+        if(result){
+            message = `${unwantedMovie} was deleted!`;
+            movieMethods.getMovieCount().then((total) => {
+                res.json(
+                {
+                    deleted : "true",
+                    records_remaining : total,
+                    message: message
+                });
+            });
+        } else {
+            message = `${unwantedMovie} was not found!`;
+            movieMethods.getMovieCount().then((total) => {
+                res.json(
+                {
+                    deleted : "false",
+                    records_remaining : total,
+                    message: message
+                });
+            });
+        }
+    })
+    .catch((err) => {
+    return next(err);
+    });
+});
+
+// MAIN ROUTES
 app.get('/', (req, res, next) => {
     movieMethods.getAllMovies()
     .then((items) => {
@@ -101,60 +181,63 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/add', (req, res) => {
-    res.type('text/html');
-    res.send('This is where the add page will go');
+    res.render('add');
 });
+
+app.use('/api/v1', router);
+app.use('/api/', cors); // set Access-Control-Allow-Origin header for api route
 
 app.use( (req,res) => {
  res.status(404);
  res.render('404');
 });
 
-// app.get('/', (req, res) => {
-//     let allMovies = movies.getAllMovies();
-//     res.render('home', {
-//         pageTitle: "ITC230 - Home",
-//         allMovies : allMovies
-//     });
-// });
+/* HOMEWORK 3 CODE
+app.get('/', (req, res) => {
+    let allMovies = movies.getAllMovies();
+    res.render('home', {
+        pageTitle: "ITC230 - Home",
+        allMovies : allMovies
+    });
+});
 
-// app.get('/details', (req, res) => {
-//     let title = req.query.title;
-//     let movie = movies.getMovie(title);
-//     if(movie){
-//         res.render('details', {
-//             pageTitle: "ITC230 - Details",
-//             movie : movie, 
-//             title : title
-//         });
-//     }
-// });
+app.get('/details', (req, res) => {
+    let title = req.query.title;
+    let movie = movies.getMovie(title);
+    if(movie){
+        res.render('details', {
+            pageTitle: "ITC230 - Details",
+            movie : movie, 
+            title : title
+        });
+    }
+});
 
-// app.post('/details', (req, res) => {
-//     let title = req.body.title;
-//     let movie = movies.getMovie(title);
-//     res.render('details', {
-//         pageTitle: "ITC230 - Details",
-//         movie : movie,
-//         title : title
-//     });
-// });
+app.post('/details', (req, res) => {
+    let title = req.body.title;
+    let movie = movies.getMovie(title);
+    res.render('details', {
+        pageTitle: "ITC230 - Details",
+        movie : movie,
+        title : title
+    });
+});
 
 
-// app.get('/delete', (req, res) => {
-//     let title = req.query.title;
-//     let movie = movies.deleteMovie(title);
-//     let remaining;
-//     if(movie){
-//         remaining = movies.getAllMovies().length;
-//     }
-//     res.render('delete', {
-//         pageTitle: "ITC230 - Delete",
-//         movie : movie, 
-//         title : title,
-//         remaining : remaining
-//     });
-// });
+app.get('/delete', (req, res) => {
+    let title = req.query.title;
+    let movie = movies.deleteMovie(title);
+    let remaining;
+    if(movie){
+        remaining = movies.getAllMovies().length;
+    }
+    res.render('delete', {
+        pageTitle: "ITC230 - Delete",
+        movie : movie, 
+        title : title,
+        remaining : remaining
+    });
+});*/
 
 
 

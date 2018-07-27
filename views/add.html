@@ -1,0 +1,35 @@
+{{> header}}
+        <div class="container">
+        <h1>Add</h1>
+        <h2>Complete the form below to add a new movie</h2>
+        <br>
+        <hr>
+        <div class="addForm">
+            <form action="/api/v1/movies" method="POST">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="movie[title]" placeholder="Title" required>
+                <label for="Year">Release Year</label>
+                <input type="text" id="year" name="movie[year]" placeholder="year">
+                <label for="imdbID">IMDB ID</label>
+                <input type="text" id="imdbID" name="movie[imdbID]" placeholder="IMDB ID">
+                <label for="posterURL">Poster URL</label>
+                <input type="text" id="poster" name="movie[poster]" placeholder="URL">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+        <br>
+        <hr>
+        <a href="/">Home</a>
+        <br>
+        <hr>
+        <h1>Delete</h1>
+        <h2>Delete a movie by entering its title below</h2>
+        <br>
+        <div class="addForm">
+        <form action="/api/v1/movies/delete" method="POST">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="deleteTitle" placeholder="Title to delete" required>
+                <input type="submit" value="Submit">
+        </div>
+        </div> <!--end container-->
+{{> footer}}
