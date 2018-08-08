@@ -37,6 +37,20 @@ app.get('/', (req, res, next) => {
     });
 });
 
+app.get('/sap', (req, res, next) => {
+   movieMethods.getAllMovies()
+   .then((items) => {
+       items = JSON.stringify(items)
+       res.render('sap', {
+           pageTitle: "ITC230 - React", 
+           allMovies: items
+       });
+   })
+   .catch((err) => {
+       return next(err);
+   });
+});
+
 app.get('/details', (req, res, next) => {
     let title = req.query.title;
     movieMethods.getMovie(title)

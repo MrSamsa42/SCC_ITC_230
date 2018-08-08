@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{pageTitle}}</title>
+    
+    <link rel="stylesheet" type="text/css" href="/stylesheets/app.css"> 
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    
+    <!-- Don't use this in production: -->
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+  </head>
+  <body>
+        <div class="nav">
+          <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/about">About</a></li>
+              <li><a href="/add">Add/Delete</a></li>
+          </ul>
+        </div> <!--end nav -->
+    <div class="container">
+      <h1>Adler IT230 WebApp</h1>
+      <hr>
+      
+      <div id="root"></div>
+    </div>
+      
+    <script type="text/babel">
+    
+      class AdlerApp extends React.Component {  
+        
+        constructor(props) {  
+          super(props);  
+          this.state = {
+            movies: {{{allMovies}}}, 
+            currentMovie: {}
+          };
+        }
+        
+        showDetails = (e) => {
+          let current = this.state.movies.find( (mov) => {
+            return mov._id == e.target.id;
+          });
+          this.setState({currentMovie: current});
+        }
+          
+        render() { 
+          return ( 
+            <div>
+              <Title 
+                title="Movie App"
+              />
+              <MovieList 
+                movies={this.state.movies} 
+                show={this.showDetails}
+                />
+                <MovieDetails
+                movie={this.state.currentMovie}
+                />
+            </div> 
+          ); 
+        } 
+      } 
+      
+    const Title = ({title}, {show}) => {
+        return (
+           <h2>{title}</h2>
+        );
+    }
+    
+    const MovieList = ({movies, show}) => {
+       const titles = movies.map(mov => <li onClick={show} id={mov._id} key={mov._id}>{mov.title}</li>);
+       return <ul>{titles}</ul>;
+    }
+    
+    const MovieDetails = (props) => {
+      if(props.movie.title){
+        var imdbURL = `https://www.imdb.com/title/${props.movie.imdbID}`
+        return <div className="container">
+                  <img className="poster" src={props.movie.poster} alt={props.movie.title} />
+                  <p>{props.movie.year}</p>
+                  <a href={imdbURL}>IMDB page</a>
+                </div>
+      } else {
+        return <div><h2>Details!</h2></div>
+      }
+    }
+    
+    ReactDOM.render(
+        <div>
+        <AdlerApp />
+        </div>,
+        document.getElementById('root')
+    );
+      
+    </script>
+  </body>
+</html>
