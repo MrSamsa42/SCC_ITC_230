@@ -37,11 +37,11 @@ app.get('/', (req, res, next) => {
     });
 });
 
-app.get('/sap', (req, res, next) => {
+app.get('/spa', (req, res, next) => {
    movieMethods.getAllMovies()
    .then((items) => {
        items = JSON.stringify(items)
-       res.render('sap', {
+       res.render('spa', {
            pageTitle: "ITC230 - React", 
            allMovies: items
        });
