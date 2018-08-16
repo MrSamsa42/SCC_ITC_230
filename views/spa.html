@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>{{pageTitle}}</title>
     
-    <link rel="stylesheet" type="text/css" href="/stylesheets/app.css"> 
+    <link rel="stylesheet" type="text/css" href="/stylesheets/reactApp.css"> 
     <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
     
@@ -12,16 +12,10 @@
     <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
   </head>
   <body>
-        <div class="nav">
-          <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/about">About</a></li>
-              <li><a href="/add">Add/Delete</a></li>
-          </ul>
-        </div> <!--end nav -->
+        <div class="title">
+          <h1>Adler IT230 WebApp</h1>
+        </div> <!--end title -->
     <div class="container">
-      <h1>Adler IT230 WebApp</h1>
-      <hr>
       
       <div id="root"></div>
     </div>
@@ -42,49 +36,146 @@
           let current = this.state.movies.find( (mov) => {
             return mov._id == e.target.id;
           });
+                 
           this.setState({currentMovie: current});
         }
-          
+
+        handleSubmit = (e) => {
+          e.preventDefault();
+        }
+
+        handleChange = (e) => {
+          let someMovie = this.state.currentMovie;
+          someMovie[e.target.name] = e.target.value;
+          this.setState({currentMovie : someMovie});
+        }
+
+        clickClear = () => {
+          this.setState({
+            currentMovie: {}
+          });
+        }
+
+        saveMovie = () => {
+          let newMovie = this.state.currentMovie;
+          console.log(newMovie);
+          fetch('/api/v1/movies', {
+            method: 'POST', 
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({movie: newMovie})
+          }).then((response) => {
+            return response.json();
+          }).then((jsonResponse) => {
+            let newMovieData;
+            if(!newMovie._id) {
+              newMovieData = this.state.movies;
+              newMovie._id = jsonResponse._id;
+              newMovieData.push(newMovie);
+            } else {
+              newMovieData = this.state.movies.map((mov) => {
+                if(mov._id === newMovie._id) {
+                  mov = newMovie;
+                }
+                return mov;
+              });
+            }
+            this.setState({movies: newMovieData});
+          });
+        }
+
+        deleteMovie = () => {
+          //console.log("clicked delete");
+          let title = this.state.currentMovie.title;
+          console.log(title);
+          fetch('/api/v1/movies/delete', {
+            method: 'POST', 
+            headers: {
+              Accept: 'applicaton/json', 
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({deleteTitle:title})
+          })
+          .then((response) => {
+            return response.json();
+          })
+          .then((results) => {
+            let remainingMovies = this.state.movies.filter((mov) => {
+              return mov.title !== title;
+            });
+          this.setState({movies: remainingMovies, currentMovie: {}});
+          });
+        }
+
         render() { 
           return ( 
-            <div>
-              <Title 
-                title="Movie App"
-              />
-              <MovieList 
+            <div className={'flexbox-container'}>
+              <MovieList
                 movies={this.state.movies} 
                 show={this.showDetails}
-                />
-                <MovieDetails
-                movie={this.state.currentMovie}
-                />
+              />
+              <div className="main">
+                 <MovieDetails
+                    movie={this.state.currentMovie}
+                    onSubmit={this.handleSubmit}
+                    onChange={this.handleChange}
+                    clear={this.clickClear}
+                    save={this.saveMovie}
+                    delete={this.deleteMovie}
+                 />
+              </div>
             </div> 
           ); 
         } 
       } 
       
-    const Title = ({title}, {show}) => {
+    const Title = (props) => {
         return (
-           <h2>{title}</h2>
+           <h2>{props.title}</h2>
         );
     }
     
-    const MovieList = ({movies, show}) => {
-       const titles = movies.map(mov => <li onClick={show} id={mov._id} key={mov._id}>{mov.title}</li>);
-       return <ul>{titles}</ul>;
+    const MovieList = (props) => {
+       const titles = props.movies.map(mov => <li onClick={props.show} id={mov._id} key={mov._id}>{mov.title}</li>);
+       return <div className="sidebar"><ul>{titles}</ul></div>;
     }
     
+    
+    // const MovieDetails = (props) => {
+    //   if(props.movie.title){
+    //     var imdbURL = `https://www.imdb.com/title/${props.movie.imdbID}`
+    //     return <div>
+    //               <img className="poster" src={props.movie.poster} alt={props.movie.title} />
+    //               <p>{props.movie.year}</p>
+    //               <a href={imdbURL}>IMDB page</a>
+    //             </div>
+    //   } else {
+    //     return <div><h2>Click a Title For Details!</h2></div>
+    //   }
+    // }
+    
+    
+    
     const MovieDetails = (props) => {
-      if(props.movie.title){
-        var imdbURL = `https://www.imdb.com/title/${props.movie.imdbID}`
-        return <div className="container">
-                  <img className="poster" src={props.movie.poster} alt={props.movie.title} />
-                  <p>{props.movie.year}</p>
-                  <a href={imdbURL}>IMDB page</a>
-                </div>
-      } else {
-        return <div><h2>Details!</h2></div>
-      }
+        return (
+        <div className="addForm">
+            <form onSubmit={props.onSubmit}>
+                <label htmlFor="title">Title</label>
+                <input type="text" id="title" name="title" onChange={props.onChange} value={props.movie.title || ""} placeholder="Title" />
+                <label htmlFor="Year">Release Year</label>
+                <input type="text" id="year" name="year" onChange={props.onChange} value={props.movie.year || ""} placeholder="Year" />
+                <label htmlFor="imdbID">IMDB ID</label>
+                <input type="text" id="imdbID" name="imdbID" onChange={props.onChange} value={props.movie.imdbID || ""} placeholder="IMDB ID" />
+                <label htmlFor="posterURL">Poster URL</label>
+                <input type="text" id="poster" name="poster" onChange={props.onChange} value={props.movie.poster || ""} placeholder="Poster URL"/>
+                <input type="submit" value="Save" onClick={props.save}/>
+                <input type="submit" value="Delete" onClick={props.delete} />
+                <input type="submit" value="Clear Form" onClick={props.clear}/>
+            </form>
+        </div>
+        );
     }
     
     ReactDOM.render(

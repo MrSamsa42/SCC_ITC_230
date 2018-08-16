@@ -5,12 +5,14 @@ const app      = express();
 const handlebars = require("express-handlebars");
 const movieMethods = require("./lib/movieMethods");
 const cors = require("cors");
+const bodyParser = require('body-parser');
 
 const apiRoute = require("./routes/api");
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.static(__dirname + '/public')); //location for static files
-app.use(require("body-parser").urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 app.engine(".html", handlebars({
     extname: '.html',
@@ -100,7 +102,6 @@ app.get('/delete', (req, res, next) => {
     return next(err);
     });
 });
-
 
 app.get('/about', (req, res) => {
    res.render('about');
