@@ -80,6 +80,9 @@
         saveMovie = () => {
           let numRecords = Object.keys(this.state.movies).length;
           let newMovie = this.state.currentMovie;
+          if(!newMovie.title){ //if there's no title, do nothing
+            return;
+          }
           console.log(newMovie);
           fetch('/api/v1/movies', {
             method: 'POST', 
@@ -87,13 +90,20 @@
               Accept: 'application/json',
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({movie: newMovie})
+            body: JSON.stringify({
+              movie: {
+                title: newMovie.title, 
+                year: newMovie.year, 
+                imdbID: newMovie.imdbID, 
+                poster: newMovie.poster
+              }
+            })
           }).then((response) => {
             return response.json();
           }).then((jsonResponse) => {
             console.log(jsonResponse); //response coming from the API
             let newMovieData;
-            //call API to get updated list of movies and their properties, and reset state 
+            //call API to get updated list of movies and their properties, and then reset state 
             let updatedMovies = fetch('api/v1/movies', {
               method: 'GET', 
               headers: {
@@ -105,36 +115,16 @@
               return movies.json();
             })
             .then((json) => {
-              console.log(json);
+              //console.log(json);
               this.setState({movies: json});
             });
           });
         }
 
-
-
-            /*
-            if(!newMovie._id) {
-              newMovieData = this.state.movies;
-              newMovie._id = jsonResponse._id;
-              newMovieData.push(newMovie);
-            } else {
-              newMovieData = this.state.movies.map((mov) => {
-                if(mov._id === newMovie._id) {
-                  mov = newMovie;
-                }
-                return mov;
-              });
-            }
-            this.setState({movies: newMovieData});
-          });
-        }
-        *////////////
-
         deleteMovie = () => {
           //console.log("clicked delete");
           let title = this.state.currentMovie.title;
-          console.log(title);
+          //console.log(title);
           fetch('/api/v1/movies/delete', {
             method: 'POST', 
             headers: {
@@ -188,22 +178,6 @@
        const titles = props.movies.map(mov => <li onClick={props.show} id={mov._id} key={mov._id || 'new'}>{mov.title}</li>);
        return <div className="sidebar"><ul>{titles}</ul></div>;
     }
-    
-    
-    // const MovieDetails = (props) => {
-    //   if(props.movie.title){
-    //     var imdbURL = `https://www.imdb.com/title/${props.movie.imdbID}`
-    //     return <div>
-    //               <img className="poster" src={props.movie.poster} alt={props.movie.title} />
-    //               <p>{props.movie.year}</p>
-    //               <a href={imdbURL}>IMDB page</a>
-    //             </div>
-    //   } else {
-    //     return <div><h2>Click a Title For Details!</h2></div>
-    //   }
-    // }
-    
-    
     
     const MovieDetails = (props) => {
         return (

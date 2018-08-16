@@ -42,9 +42,10 @@ router.get('/movies/:title', (req, res) =>{
 router.post('/movies', (req, res, next) => {
     let newMovie = req.body.movie;
     //newMovie = undefined;
+    console.log(newMovie);
     movieMethods.createMovie(newMovie)
     .then((result) => {
-        console.log(result);
+        //console.log(result);
         movieMethods.getMovieCount().then((total) => {
             res.json(
             {
