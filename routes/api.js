@@ -44,6 +44,7 @@ router.post('/movies', (req, res, next) => {
     //newMovie = undefined;
     movieMethods.createMovie(newMovie)
     .then((result) => {
+        console.log(result);
         movieMethods.getMovieCount().then((total) => {
             res.json(
             {

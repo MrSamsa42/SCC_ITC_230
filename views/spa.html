@@ -74,9 +74,11 @@
           this.setState({
             currentMovie: {}
           });
+          //console.log(Object.keys(this.state.movies).length);
         }
 
         saveMovie = () => {
+          let numRecords = Object.keys(this.state.movies).length;
           let newMovie = this.state.currentMovie;
           console.log(newMovie);
           fetch('/api/v1/movies', {
@@ -89,7 +91,29 @@
           }).then((response) => {
             return response.json();
           }).then((jsonResponse) => {
+            console.log(jsonResponse); //response coming from the API
             let newMovieData;
+            //call API to get updated list of movies and their properties, and reset state 
+            let updatedMovies = fetch('api/v1/movies', {
+              method: 'GET', 
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+              }
+            })
+            .then((movies) => {
+              return movies.json();
+            })
+            .then((json) => {
+              console.log(json);
+              this.setState({movies: json});
+            });
+          });
+        }
+
+
+
+            /*
             if(!newMovie._id) {
               newMovieData = this.state.movies;
               newMovie._id = jsonResponse._id;
@@ -105,6 +129,7 @@
             this.setState({movies: newMovieData});
           });
         }
+        *////////////
 
         deleteMovie = () => {
           //console.log("clicked delete");
@@ -160,7 +185,7 @@
     }
     
     const MovieList = (props) => {
-       const titles = props.movies.map(mov => <li onClick={props.show} id={mov._id} key={mov._id}>{mov.title}</li>);
+       const titles = props.movies.map(mov => <li onClick={props.show} id={mov._id} key={mov._id || 'new'}>{mov.title}</li>);
        return <div className="sidebar"><ul>{titles}</ul></div>;
     }
     
