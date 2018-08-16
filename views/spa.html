@@ -27,10 +27,30 @@
         constructor(props) {  
           super(props);  
           this.state = {
-            movies: {{{allMovies}}}, 
+            movies: {{{allMovies}}},
             currentMovie: {}
           };
         }
+        
+        /*
+        componentDidMount(){
+          console.log("It mounted!");
+          let dbMovies = fetch('api/v1/movies', {
+            method: 'GET', 
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            }
+          })
+          .then((movies) => {
+            return movies.json();
+          })
+          .then((json) => {
+            console.log(json);
+            this.setState({movies: json});
+          });
+        }
+        */
         
         showDetails = (e) => {
           let current = this.state.movies.find( (mov) => {
@@ -102,10 +122,12 @@
             return response.json();
           })
           .then((results) => {
-            let remainingMovies = this.state.movies.filter((mov) => {
-              return mov.title !== title;
-            });
-          this.setState({movies: remainingMovies, currentMovie: {}});
+            if(results.deleted === 'true'){
+              let remainingMovies = this.state.movies.filter((mov) => {
+                return mov.title !== title;
+              });
+              this.setState({movies: remainingMovies, currentMovie: {}});
+            }
           });
         }
 
