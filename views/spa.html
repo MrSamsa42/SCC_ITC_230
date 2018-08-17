@@ -28,30 +28,11 @@
           super(props);  
           this.state = {
             movies: {{{allMovies}}},
-            currentMovie: {}
+            currentMovie: {}, 
+            search: ''
           };
         }
-        
-        /*
-        componentDidMount(){
-          console.log("It mounted!");
-          let dbMovies = fetch('api/v1/movies', {
-            method: 'GET', 
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            }
-          })
-          .then((movies) => {
-            return movies.json();
-          })
-          .then((json) => {
-            console.log(json);
-            this.setState({movies: json});
-          });
-        }
-        */
-        
+               
         showDetails = (e) => {
           let current = this.state.movies.find( (mov) => {
             return mov._id == e.target.id;
@@ -74,16 +55,13 @@
           this.setState({
             currentMovie: {}
           });
-          //console.log(Object.keys(this.state.movies).length);
         }
 
         saveMovie = () => {
-          let numRecords = Object.keys(this.state.movies).length;
           let newMovie = this.state.currentMovie;
           if(!newMovie.title){ //if there's no title, do nothing
             return;
           }
-          console.log(newMovie);
           fetch('/api/v1/movies', {
             method: 'POST', 
             headers: {
@@ -98,9 +76,11 @@
                 poster: newMovie.poster
               }
             })
-          }).then((response) => {
+          })
+          .then((response) => {
             return response.json();
-          }).then((jsonResponse) => {
+          })
+          .then((jsonResponse) => {
             console.log(jsonResponse); //response coming from the API
             let newMovieData;
             //call API to get updated list of movies and their properties, and then reset state 
@@ -115,16 +95,13 @@
               return movies.json();
             })
             .then((json) => {
-              //console.log(json);
               this.setState({movies: json});
             });
           });
         }
 
         deleteMovie = () => {
-          //console.log("clicked delete");
           let title = this.state.currentMovie.title;
-          //console.log(title);
           fetch('/api/v1/movies/delete', {
             method: 'POST', 
             headers: {
